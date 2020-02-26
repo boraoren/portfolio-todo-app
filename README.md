@@ -6,6 +6,8 @@ and [Serverless](https://serverless.com/) framework.
 1. [CLIENT](#frontend)
    1. [Client Authentication](#authentication)
    1. [Client run](#run)
+1. [BACKEND](#backend)
+   1. [Backend run](#backend-run)
 
 # CLIENT
 The `client` folder contains a web 
@@ -53,3 +55,12 @@ npm run start
 This should start a development server 
 with the React application that will interact 
 with the serverless TODO application.
+
+# BACKEND
+
+## Backend run
+```
+cd backend
+npm install
+sls deploy -v
+```

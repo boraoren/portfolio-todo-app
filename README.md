@@ -8,7 +8,8 @@ and [Serverless](https://serverless.com/) framework.
    1. [Client run](#run)
 1. [BACKEND](#backend)
    1. [Backend run](#backend-run)
-
+      1. [DynamoDB](#dynamodb)
+  
 # CLIENT
 The `client` folder contains a web 
 application that can use the API that 
@@ -64,3 +65,6 @@ cd backend
 npm install
 sls deploy -v
 ```
+
+## DynamoDB
+Table name is `TodoTable`

@@ -1,6 +1,9 @@
 service:
   name: portfolio-todo-app
 
+plugins:
+  - serverless-webpack
+  - serverless-aws-documentation
 custom:
   documentation:
     api:
@@ -8,13 +11,11 @@ custom:
         version: v1.0.0
         title: Todo API
         description: Todo List Serverless API
+
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
 
-plugins:
-  - serverless-webpack
-  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -26,6 +27,9 @@ provider:
   tracing:
     lambda: true
     apiGateway: true
+
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
 
   environment:
     TODO_TABLE: Todo-${self:provider.stage}
@@ -47,15 +51,23 @@ resources:
           - AttributeName: todoId
             KeyType: HASH
           - AttributeName: userId
-              KeyType: RANGE
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODO_TABLE}
         LocalSecondaryIndexes:
           - IndexName: ${self:provider.environment.INDEX_USER_ID}
             KeySchema:
-              - AttributeName: todoId
-                KeyType: HASH
-              - AttributeName: indexKey
-                KeyType: RANGE
+            - AttributeName: todoId
+              KeyType: HASH
+            - AttributeName: indexKey
+              KeyType: RANGE
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          method: get
+          path: hello

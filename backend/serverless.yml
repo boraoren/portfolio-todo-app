@@ -4,6 +4,9 @@ service:
 plugins:
   - serverless-webpack
   - serverless-aws-documentation
+  - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+
 custom:
   documentation:
     api:
@@ -11,6 +14,10 @@ custom:
         version: v1.0.0
         title: Todo API
         description: Todo List Serverless API
+    models:
+      - name: CreateTodoRequest
+        contentType: application/json
+        schema: ${file(src/lambda/requests/create-todo-request.json)}
 
   webpack:
     webpackConfig: ./webpack.config.js
@@ -64,6 +71,16 @@ resources:
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
 
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+
+
 functions:
   hello:
     handler: handler.hello
@@ -71,3 +88,31 @@ functions:
       - http:
           method: get
           path: hello
+
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+  CreateTodo:
+    handler: src/lambda/api/createTodo.handler
+    tracing: PassThrough
+    events:
+      - http:
+          method: post
+          path: todos
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: create todo record
+            description: create todo record
+            requestModels:
+              'application/json': CreateTodoRequest
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODO_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODO_TABLE}/index/${self:provider.environment.INDEX_USER_ID}

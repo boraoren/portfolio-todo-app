@@ -26,7 +26,7 @@ an API endpoint and Auth0 configuration:
 
 ```ts
 const apiId = '...' API Gateway id
-export const apiEndpoint = `https://${apiId}.execute-api.us-east-1.amazonaws.com/dev`
+export const apiEndpoint = `https://${apiId}.execute-api.ap-southeast-2.amazonaws.com/dev`
 
 export const authConfig = {
   domain: '...',    // Domain from Auth0

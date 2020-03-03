@@ -4,9 +4,12 @@ import {APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult} fro
 import {getToken, parseUserId} from '../../auth/utils'
 import {DocumentClient} from "aws-sdk/clients/dynamodb";
 import * as AWS from "aws-sdk";
+import {createLogger} from "../../utils/logger";
+
+const logger = createLogger('deleteTodo')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log(`deleteTodo is processing event`)
+    logger.info(`deleteTodo is processing event`)
 
     const todoId = event.pathParameters.todoId
     const jwtToken = getToken(event.headers.Authorization)
@@ -36,7 +39,7 @@ export async function deleteTodoService(todoId: string, jwtToken: string
 //RESOURCE
 export async function deleteTodoResource(todoId: string, activeUser: string): Promise<any> {
 
-    console.log(`Deleting item with userId ${activeUser} and todoId ${todoId}`)
+    logger.info(`Deleting item with userId ${activeUser} and todoId ${todoId}`)
 
     const params = {
         TableName: process.env.TODO_TABLE,

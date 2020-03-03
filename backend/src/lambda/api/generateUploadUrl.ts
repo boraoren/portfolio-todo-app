@@ -3,14 +3,17 @@ import * as AWS from 'aws-sdk'
 import {APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult} from 'aws-lambda'
 import {getToken, parseUserId} from '../../auth/utils'
 import {DocumentClient} from "aws-sdk/clients/dynamodb";
+import {createLogger} from "../../utils/logger";
 
 const s3 = new AWS.S3({ signatureVersion: 'v4' })
 
 const bucketName = process.env.IMAGES_S3_BUCKET
 const urlExpiration = Number(process.env.SIGNED_URL_EXPIRATION)
 
+const logger = createLogger('generateUploadUrl')
+
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log(`generateUploadUrl is processing event`)
+    logger.info(`generateUploadUrl is processing event`)
 
     const todoId = event.pathParameters.todoId
     const jwtToken = getToken(event.headers.Authorization)
@@ -44,7 +47,7 @@ export async function generateUploadService(todoId: string,
 export async function updateURLRepository(todoId: string,
     activeUser: string
 ): Promise<any> {
-    console.log(`Updating attachmentUrl for todo item: ${todoId}`)
+    logger.info(`Updating attachmentUrl for todo item: ${todoId}`)
 
     const imageUrl = `https://${bucketName}.s3.amazonaws.com/${todoId}`
 

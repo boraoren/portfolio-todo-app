@@ -5,9 +5,12 @@ import {getToken, parseUserId} from '../../auth/utils'
 import {DocumentClient} from "aws-sdk/clients/dynamodb"
 import * as AWS from "aws-sdk"
 import {UpdateTodoRequest} from "../requests/UpdateTodoRequest"
+import {createLogger} from "../../utils/logger";
+
+const logger = createLogger('updateTodo')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log(`updateTodo is processing event`)
+    logger.info(`updateTodo is processing event`)
 
     const todoId = event.pathParameters.todoId
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
@@ -42,7 +45,7 @@ export async function updateTodoService(todoId: string,
 export async function updateTodoResource(todoId: string,
                                          updatedTodo: UpdateTodoRequest,
                                          activeUser: string): Promise<any> {
-    console.log(`dataLayer updateTodo updating item with todoId ${todoId}`)
+    logger.info(`dataLayer updateTodo updating item with todoId ${todoId}`)
 
     const params = {
         TableName: process.env.TODO_TABLE,
@@ -61,6 +64,6 @@ export async function updateTodoResource(todoId: string,
     const documentClient: DocumentClient = new AWS.DynamoDB.DocumentClient()
     const result = await documentClient.update(params).promise()
 
-    console.log(`todo updated,  result is : ${result}`)
+    logger.info(`todo updated,  result is : ${result}`)
     return result
 }

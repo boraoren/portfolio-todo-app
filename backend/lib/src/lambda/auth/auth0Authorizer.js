@@ -4,10 +4,10 @@ import Axios from 'axios';
 import { getToken } from '../../auth/utils';
 const jwkToPem = require('jwk-to-pem');
 export const handler = async (event) => {
-    console.info('Authorizing a user', event.authorizationToken);
+    console.log('Authorizing a user', event.authorizationToken);
     try {
         const jwtToken = await verifyToken(event.authorizationToken);
-        console.info('User was authorized', jwtToken);
+        console.log('User was authorized', jwtToken);
         return {
             principalId: jwtToken.sub,
             policyDocument: {

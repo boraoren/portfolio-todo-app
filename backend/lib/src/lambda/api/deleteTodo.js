@@ -1,8 +1,12 @@
 import 'source-map-support/register';
 import { getToken, parseUserId } from '../../auth/utils';
 import * as AWS from "aws-sdk";
+import {createLogger} from "../../../../src/utils/logger";
+
+const logger = createLogger('deleteTodo')
+
 export const handler = async (event) => {
-    console.log(`deleteTodo is processing event`);
+    logger.info(`deleteTodo is processing event`);
     const todoId = event.pathParameters.todoId;
     const jwtToken = getToken(event.headers.Authorization);
     const deletedTodo = await deleteTodoService(todoId, jwtToken);
@@ -22,7 +26,7 @@ export async function deleteTodoService(todoId, jwtToken) {
     return await deleteTodoResource(todoId, activeUser);
 }
 export async function deleteTodoResource(todoId, activeUser) {
-    console.log(`Deleting item with userId ${activeUser} and todoId ${todoId}`);
+    logger.info(`Deleting item with userId ${activeUser} and todoId ${todoId}`);
     const params = {
         TableName: process.env.TODO_TABLE,
         Key: { todoId },

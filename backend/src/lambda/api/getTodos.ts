@@ -5,11 +5,14 @@ import {getToken, parseUserId} from '../../auth/utils'
 import {TodoItem} from "../../models/TodoItem";
 import {DocumentClient} from "aws-sdk/clients/dynamodb";
 import * as AWS from "aws-sdk";
+import {createLogger} from "../../utils/logger";
+
+const logger = createLogger('getTodos')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
     const jwtToken = getToken(event.headers.Authorization)
-    console.log(`Received JWT token: ${jwtToken}`)
+    logger.info(`Received JWT token: ${jwtToken}`)
 
     const todos = await getAllTodosService(jwtToken)
 
@@ -33,7 +36,7 @@ export async function getAllTodosService(jwtToken: string): Promise<TodoItem[]> 
 
 //RESOURCE
 export async function getAllTodosResource(activeUser: string): Promise<TodoItem[]> {
-    console.log(`Getting all Todos for user: ${activeUser}`)
+    logger.info(`Getting all Todos for user: ${activeUser}`)
     const documentClient: DocumentClient = new AWS.DynamoDB.DocumentClient()
 
     const params = {
@@ -49,8 +52,6 @@ export async function getAllTodosResource(activeUser: string): Promise<TodoItem[
     const result = await documentClient.query(params).promise()
 
     const todos = result.Items
-
-    console.table(todos)
 
     return todos as TodoItem[]
 }

@@ -6,15 +6,17 @@ import * as uuid from 'uuid'
 import {TodoItem} from "../../models/TodoItem";
 import {CreateTodoRequest} from "../requests/CreateTodoRequest";
 import {getToken, parseUserId} from '../../auth/utils'
+import {createLogger} from "../../utils/logger";
 
+const logger = createLogger('createTodo')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.info(`createTodo is processing event`)
+    logger.info(`createTodo is processing event`)
 
     const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
     const jwtToken = getToken(event.headers.Authorization)
-    console.info(`Received JWT token: ${jwtToken}`)
+    logger.info(`Received JWT token: ${jwtToken}`)
 
     const newItem = await createTodoService(newTodo, jwtToken)
 
@@ -52,7 +54,7 @@ export async function createTodoService(
 
 /// RESOURCE
 export async function createTodoResource(todo: TodoItem): Promise<TodoItem> {
-    console.info(`Creating a Todo item with todoId ${todo.todoId}`)
+    logger.info(`Creating a Todo item with todoId ${todo.todoId}`)
     const documentClient: DocumentClient = new AWS.DynamoDB.DocumentClient()
     await documentClient.put({
         TableName: process.env.TODO_TABLE,

@@ -1,8 +1,12 @@
 import 'source-map-support/register';
 import { getToken, parseUserId } from '../../auth/utils';
 import * as AWS from "aws-sdk";
+import {createLogger} from "../../../../src/utils/logger";
+
+const logger = createLogger('updateTodo')
+
 export const handler = async (event) => {
-    console.log(`updateTodo is processing event`);
+    logger.info(`updateTodo is processing event`);
     const todoId = event.pathParameters.todoId;
     const updatedTodo = JSON.parse(event.body);
     const jwtToken = getToken(event.headers.Authorization);
@@ -23,7 +27,7 @@ export async function updateTodoService(todoId, updatedTodo, jwtToken) {
     return await updateTodoResource(todoId, updatedTodo, activeUser);
 }
 export async function updateTodoResource(todoId, updatedTodo, activeUser) {
-    console.log(`dataLayer updateTodo updating item with todoId ${todoId}`);
+    logger.info(`dataLayer updateTodo updating item with todoId ${todoId}`);
     const params = {
         TableName: process.env.TODO_TABLE,
         Key: { todoId },
@@ -39,7 +43,7 @@ export async function updateTodoResource(todoId, updatedTodo, activeUser) {
     };
     const documentClient = new AWS.DynamoDB.DocumentClient();
     const result = await documentClient.update(params).promise();
-    console.log(`todo updated,  result is : ${result}`);
+    logger.info(`todo updated,  result is : ${result}`);
     return result;
 }
 //# sourceMappingURL=updateTodo.js.map

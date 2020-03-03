@@ -1,9 +1,13 @@
 import 'source-map-support/register';
 import { getToken, parseUserId } from '../../auth/utils';
 import * as AWS from "aws-sdk";
+import {createLogger} from "../../../../src/utils/logger";
+
+const logger = createLogger('getTodos')
+
 export const handler = async (event) => {
     const jwtToken = getToken(event.headers.Authorization);
-    console.log(`Received JWT token: ${jwtToken}`);
+    logger.info(`Received JWT token: ${jwtToken}`);
     const todos = await getAllTodosService(jwtToken);
     return {
         statusCode: 200,
@@ -21,7 +25,7 @@ export async function getAllTodosService(jwtToken) {
     return await getAllTodosResource(activeUser);
 }
 export async function getAllTodosResource(activeUser) {
-    console.log(`Getting all Todos for user: ${activeUser}`);
+    logger.info(`Getting all Todos for user: ${activeUser}`);
     const documentClient = new AWS.DynamoDB.DocumentClient();
     const params = {
         TableName: process.env.TODO_TABLE,
@@ -34,7 +38,6 @@ export async function getAllTodosResource(activeUser) {
     };
     const result = await documentClient.query(params).promise();
     const todos = result.Items;
-    console.table(todos);
     return todos;
 }
 //# sourceMappingURL=getTodos.js.map

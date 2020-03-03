@@ -5,13 +5,16 @@ import Axios from 'axios'
 import {Jwt} from '../../auth/Jwt'
 import {JwtPayload} from '../../auth/JwtPayload'
 import {getToken} from '../../auth/utils'
+import {createLogger} from "../../utils/logger";
 const jwkToPem = require('jwk-to-pem')
 
+const logger = createLogger('auth0Authorizer')
+
 export const handler = async (event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
-    console.info('Authorizing a user', event.authorizationToken);
+    logger.info('Authorizing a user', event.authorizationToken);
     try {
         const jwtToken = await verifyToken(event.authorizationToken);
-        console.info('User was authorized', jwtToken);
+        logger.info('User was authorized', jwtToken);
 
         return {
             principalId: jwtToken.sub,

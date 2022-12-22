@@ -9,7 +9,7 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "axios": "^0.19.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "jwk-to-pem": "^2.0.3",
     "serverless-reqvalidator-plugin": "^1.0.3",
     "source-map-support": "^0.5.10",
